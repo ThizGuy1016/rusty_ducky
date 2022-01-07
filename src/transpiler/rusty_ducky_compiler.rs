@@ -1,0 +1,1 @@
+// Compiles parser tokens into a rusty_ducky binary executable that will write usb key reports to the device's hid directory
