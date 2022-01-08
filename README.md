@@ -3,7 +3,7 @@
 
 ## Compatibility
 
-**rusty_ducky** has the ability to transpile DuckyScripy into circuit python code that can be run on any circuit python compatibile microcontroller that has usb hid support.
+**rusty_ducky** has the ability to transpile DuckyScript into Circuit Python code that can be run on any Circuit Python compatibile microcontroller that has usb hid support.
 For a list of compatible devices check this link: [Circuit Python Downloads](https://circuitpython.org/downloads)
 > Keep in mind not all devices on this list will work due to usb hid support.
 
