@@ -1,0 +1,35 @@
+# rusty_ducky
+> "DuckyScript simplified"
+
+**rusty_ducky** is a DuckyScript keystroke injection toolkit for microcontrollers that support Circuit Python.
+
+## Compatibility
+
+**rusty_ducky** has the ability to transpile DuckyScripy into circuit python code that can be run on any circuit python compatibile microcontroller that has usb hid support.
+For a list of compatible devices check this link: [Circuit Python Downloads](https://circuitpython.org/downloads)
+> Keep in mind not all devices on this list will work due to usb hid support.
+
+## Installation 
+
+- Head to this site and download circuit python for your microcontroller: [Circuit Python Downloads](https://circuitpython.org/downloads)
+- Install circuit python onto yur device following the instructions from here: [Circuit Python Guide](https://learn.adafruit.com/welcome-to-circuitpython/installing-circuitpython)
+- Download **rusty_ducky** from the releases for your operating system
+- Finished
+
+## --help
+
+```
+OPTIONS:
+        
+    -i, --template <template>    Overrides rusty ducky's template circuit python file to a file of
+                                 your choosing.
+    -l, --language <language>    Points rusty ducky to a [keyboard_language].json file to parse. [default: US]
+    -o, --output <output>        Specify a name for the transpiled cuircut python file. [default: Code.py]
+    
+    -p, --payload <payload>      Points rusty ducky to a payload file to transpile. Default is payload.txt [default: payload.txt]
+    
+    -t, --transpile              Tells rusty ducky to transpile the payload file to cuircut python.
+    
+    -v, --verbose                Sets the verbosity level of rusty ducky errors.
+    
+    -V, --version                Print version information
