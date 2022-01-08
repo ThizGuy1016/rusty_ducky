@@ -9,8 +9,7 @@ use crate::DuckyError;
 use super::{KeyCode, KeyReport, RELEASE, Args};
 
 fn load_layout(args: &Args) -> Result<Value, DuckyError> {
-    let file_location: String = format!("keyboard_layouts/{}.json", &args.keyboard_language.to_uppercase());
-    let layout_file = match File::open(file_location) {
+    let layout_file = match File::open(&args.keyboard_language) {
         Ok(f) => Ok(f),
         Err(e) => {
             let verbose_error = format!("{}", e);
