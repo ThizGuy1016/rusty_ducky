@@ -1,8 +1,6 @@
 # rusty_ducky
 > "DuckyScript simplified"
 
-**rusty_ducky** is a DuckyScript keystroke injection toolkit for microcontrollers that support Circuit Python.
-
 ## Compatibility
 
 **rusty_ducky** has the ability to transpile DuckyScripy into circuit python code that can be run on any circuit python compatibile microcontroller that has usb hid support.
