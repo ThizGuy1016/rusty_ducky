@@ -16,6 +16,8 @@ For a list of compatible devices check this link: [Circuit Python Downloads](htt
 - Download **rusty_ducky** from the releases for your operating system
 - Finished
 
+> wait... you don't have to download the adafruit_hid library... interesting...
+
 ## --help
 
 ```
