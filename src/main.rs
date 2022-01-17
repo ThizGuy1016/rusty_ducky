@@ -35,7 +35,7 @@ fn main() -> Result<(), DuckyError> {
 
     println!("[SUCCESS] Tranpiled with no errors.\n| Input: '{}'\n| Output: '{}'\n| Output size: '{}'\n| Layout: '{}'\n| Time elapsed: {:.2?}", &args.payload_file, &args.output_file, display_size, &args.keyboard_language, elapsed);
 
-    if output_size > 64_000 { println!("\n[WARNING] Output file size.\n| Due to the limited ammount of RAM on certain microcontrollers,\n| files exceeding 64K in size might not fit.\n| Check your board's specifications to make sure the payload will run.")}
+    if output_size > 50_000 { println!("\n[WARNING] Output file size.\n| Due to the limited amount of FLASH storage on Non-Express microcontrollers,\n| Files exceeding 50K in size might not fit.\n| Check out Circuit Python's expectations page for more details.\n| https://learn.adafruit.com/circuitpython-essentials/circuitpython-expectations")}
 
     Ok(())
 
