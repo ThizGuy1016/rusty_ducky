@@ -16,6 +16,10 @@ For a list of compatible devices check this link: [Circuit Python Downloads](htt
 
 > wait... you don't have to download the adafruit_hid library... interesting...
 
+## DuckyScript
+
+- Head to this site to check out how to create DuckyScript Payloads: [DuckyScript Site](https://docs.hak5.org/hc/en-us/articles/360010555153-Ducky-Script-the-USB-Rubber-Ducky-language)
+
 ## --help
 
 ```
