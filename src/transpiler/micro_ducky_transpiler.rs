@@ -11,9 +11,10 @@ def report(report_code, rel = True, slep = 0.02) -> None:
     time.sleep(slp)
     if rel:
         kbd.send_report(bytearray([0]*8))
-        time.sleep(0.001)
+        time.sleep(0.02)
 slp = 0
 kbd = [device for device in usb_hid.devices if device.usage_page == 0x1 and device.usage == 0x6 and hasattr(device, 'send_report')][0]
+time.sleep(1)
 ";
 
 fn read_template(args: &Args) -> Result<String, DuckyError> { 
@@ -39,6 +40,7 @@ pub fn transpile(args: &Args, report_buf: &Vec<KeyReport>) -> Result<(), DuckyEr
     if args.template_file == None { file_buf = TEMPLATE.to_string() }
     else { file_buf = read_template(&args)?}
     let mut str_report: String;
+    
     for (i, report) in report_buf.iter().enumerate() {
         
         if report == &RELEASE { continue }

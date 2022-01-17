@@ -20,14 +20,14 @@ impl DuckyError {
 use std::fmt;
 impl fmt::Display for DuckyError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.message)
+        write!(f, "| {}", self.message)
     }
 }
 
 // change this for prettier errors
 impl fmt::Debug for DuckyError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}\n{}\n{}", self.message, self.data, self.verbose_info)
+        write!(f, "{}\n| {}\n| {}", self.message, self.data, self.verbose_info)
     }
 }
 
@@ -48,7 +48,7 @@ impl From<io::Error> for DuckyError {
             io::ErrorKind::InvalidData => DuckyError::new("Failed to parse payload file due to invalid data.", None, (error_data.as_str(), true)),
             io::ErrorKind::Interrupted => DuckyError::new("Failed to parse payload file due to being interrupted.", None, (error_data.as_str(), true)),
             io::ErrorKind::OutOfMemory => DuckyError::new("Failed to parse payload file due to running out of availible memory", None, (error_data.as_str(), true)),
-            _ => DuckyError::new("SHIT'S BITCHIN'!", None, ("hella", true))
+            _ => DuckyError::new("Failed to run program due to unknown error.", Some("Make sure to not pass directories as arguments."), (error_data.as_str(), true))
         }
     }
 }

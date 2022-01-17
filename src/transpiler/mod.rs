@@ -3,12 +3,12 @@ pub mod rusty_ducky_compiler;
 pub mod micro_ducky_transpiler;
 pub mod parser;
 
+pub use parser::Parser;
 pub use micro_ducky_transpiler::transpile;
-pub use parser::parse_payload;
 //pub use rusty_ducky_compiler::compile;
 
-pub type KeyCode = u16;
-pub type KeyReport = [KeyCode; 8];
+pub type KeyValue = u16;
+pub type KeyReport = [KeyValue; 8];
 pub const RELEASE: KeyReport = [0, 0, 0, 0, 0, 0, 0, 0];
 
 extern crate clap;
@@ -16,12 +16,12 @@ extern crate clap;
 use clap::{App, Arg};
 use std::ffi::OsString;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Args {
-    payload_file: String,
+    pub payload_file: String,
     template_file: Option<String>,
-    output_file: String,
-    keyboard_language: String,
+    pub output_file: String,
+    pub keyboard_language: String,
     pub compile: bool,
     pub transpile: bool,
     verbose: bool
@@ -38,7 +38,7 @@ impl Args {
         T: Into<OsString> + Clone,    
     {
         let app = App::new("rusty_ducky")
-            .version("0.4")
+            .version("0.4.3")
             .about("rusty_ducky is a DuckyScript keystroke injection toolkit for microcontrollers that support Circuit Python.")
             .author("Carter Vavra");
 

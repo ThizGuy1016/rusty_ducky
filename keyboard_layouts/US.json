@@ -120,12 +120,14 @@
     "RIGHTARROW": 79,
     "RIGHT": 79,
 
+    "SUPER": 8,
     "WINDOWS": 8,
     "WIN": 8,
     "GUI": 8,
     "CTRL": 1,
     "CONTROL": 1,
     "SHIFT": 2,
+    "ALT": 4,
     "COMMAND": 91,
     "CMD": 91,
 
