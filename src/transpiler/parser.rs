@@ -28,6 +28,7 @@ impl <'a>ToKeyCode for &'a str {
             "CTRL" => true,
             "SHIFT" => true,
             "ALT" => true,
+            "SUPER" => true,
             "WINDOWS" => true,
             "WIN" => true,
             "GUI" => true,
