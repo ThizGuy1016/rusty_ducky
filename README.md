@@ -32,8 +32,6 @@ OPTIONS:
     
     -p, --payload <payload>      Points rusty ducky to a payload file to transpile. Default is payload.txt [default: payload.txt]
     
-    -t, --transpile              Tells rusty ducky to transpile the payload file to cuircut python.
-    
     -v, --verbose                Sets the verbosity level of rusty ducky errors.
     
     -V, --version                Print version information
