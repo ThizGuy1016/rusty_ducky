@@ -38,8 +38,8 @@ impl fmt::Display for DuckyError {
 impl fmt::Debug for DuckyError {
     
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        if self.verbose_info == "" { write!(f, "{}\n| {}", self.message, self.data) }
-        else { write!(f, "{}\n| {}\n| {}", self.message, self.data, self.verbose_info.red()) }
+        if self.verbose_info == "" { write!(f, "{} {}\n| {}", "[FATAL]".red().bold(), self.message, self.data) }
+        else { write!(f, "{} {}\n| {}\n| {}", "[FATAL]".red().bold(), self.message, self.data, self.verbose_info.red().bold()) }
     }
 }
 

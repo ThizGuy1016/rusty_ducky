@@ -1,8 +1,10 @@
 // parses the provided duckyscript payload into tokens that can be used for compilation, transpilation, or even execution
-
 use serde_json::Value;
 use std::fs::File;
 use std::io::{BufReader, prelude::*};
+
+extern crate colored;
+use colored::*;
 
 use crate::DuckyError;
 
@@ -14,35 +16,35 @@ struct KeyCode {
     mod_code: KeyValue
 }
 
-trait ToKeyCode {
-    fn to_keycode(&self, kb_layout: &Value) -> Result<KeyCode, DuckyError>;
-    fn is_mod(&self) -> bool;
+fn is_mod<T: ToString>(s: &T) -> bool {
+    match s.to_string().as_str() {
+        "CONTROL" => true,
+        "CTRL" => true,
+        "SHIFT" => true,
+        "ALT" => true,
+        "SUPER" => true,
+        "WINDOWS" => true,
+        "WIN" => true,
+        "GUI" => true,
+        _ => false
+    }   
 }
 
-// responsible for converting payload tokens to keycodes
-impl <'a>ToKeyCode for &'a str {
+trait ToKeyCode {
+    fn to_keycode<T>(&self, kb_layout: &Value) -> Result<KeyCode, DuckyError>;
+}
 
-    fn is_mod(&self) -> bool {
-        match *self {
-            "CONTROL" => true,
-            "CTRL" => true,
-            "SHIFT" => true,
-            "ALT" => true,
-            "SUPER" => true,
-            "WINDOWS" => true,
-            "WIN" => true,
-            "GUI" => true,
-            _ => false
-        }
-    }
+impl <T>ToKeyCode for T
+where T: serde_json::value::Index + Sized + Clone + std::fmt::Display
+{
+    fn to_keycode<S>(&self, kb_layout: &Value) -> Result<KeyCode, DuckyError> {
 
-    fn to_keycode(&self, kb_layout: &Value) -> Result<KeyCode, DuckyError> {
         let mut keycode = kb_layout[&self].to_string().parse::<KeyValue>()?;
         let mut modcode = 0;
-        let cmd_type = &self.is_mod();
+        let cmd_type = is_mod(self);
 
         if keycode > 128 { keycode = keycode - 128; modcode = kb_layout["SHIFT"].to_string().parse::<KeyValue>()?; }
-        if cmd_type == &true { modcode = keycode; keycode = 0; }
+        if cmd_type { modcode = keycode; keycode = 0; }
 
         Ok(KeyCode {
             key_code: keycode,
@@ -74,7 +76,7 @@ impl Parser {
         for (index, line) in reader.lines().enumerate() {
             let payload_line = line?;
             let payload_tokens = payload_line.split_whitespace().collect::<Vec<&str>>();
-            let err_data = format!("Error occurs in: '{}'\n| {}: '{}'", payload_file, index, payload_line);
+            let err_data = format!("Error occurs in: '{}'\n| {}: '{}'", payload_file.yellow().bold(), (index + 1).to_string().yellow(), payload_line.red().bold());
 
             if payload_tokens.len() == 0 { continue }
 
@@ -95,10 +97,10 @@ impl Parser {
                 
                 "DELAY" => {                
                     // an empty delay means we default to default_delay
-                    if d_delay == true && payload_tokens.len() <= 1 { report_buf.push([100, 0, 0, 0, 0, 0, 0, 0])}
+                    if d_delay == true && payload_tokens.len() <= 1 { report_buf.push([0, 100, 0, 0, 0, 0, 0, 0])}
                     else if d_delay == false && payload_tokens.len() <= 1 {
                         Err(DuckyError::new(
-                            "DELAY was called without a value, but DEFAULT_DELAY was not set.",
+                            format!("{} was called without a value, but {} was not set.", "DELAY".yellow().bold(), "DEFAULT_DELAY".blue().bold()).as_str(),
                             Some(err_data.as_str()),
                             ("Make sure to call DEFAULT_DELAY before assigning empty delays.", ARGS.verbose)
                         ))?
@@ -108,7 +110,7 @@ impl Parser {
                         let delay_time = match payload_tokens[1].parse::<KeyValue>() {
                         Ok(t) => Ok(t),
                         Err(_e) => Err(DuckyError::new(
-                            "Failed to convert delay time into a number.",
+                            format!("Failed to convert {} time into a number.", "DELAY".yellow().bold()).as_str(),
                             Some(err_data.as_str()),
                             ("Make sure the value for delay time is formatted as such: DELAY [delay_time]", ARGS.verbose)
                             ))
@@ -118,10 +120,17 @@ impl Parser {
                 },
                 
                 "DEFAULT_DELAY" => {
+                    if payload_tokens.len() == 1 { 
+                        return Err(DuckyError::new(
+                            format!("No value given for {}", "DEFAULT_DELAY".yellow().bold()).as_str(),
+                            Some(err_data.as_str()),
+                            ("Make sure the value for delay time is formatted as such: DEFAULT_DELAY [delay_time]", ARGS.verbose)
+                        ))
+                    }
                     let delay_time = match payload_tokens[1].parse::<KeyValue>() {
                         Ok(t) => Ok(t),
                         Err(_e) => Err(DuckyError::new(
-                            "Failed to convert default delay time into a number.",
+                            format!("Failed to convert {} time into a number.", "DEFAULT_DELAY".yellow().bold()).as_str(),
                             Some(err_data.as_str()),
                             ("Make sure the value for delay time is formatted as such: DEFAULT_DELAY [delay_time]", ARGS.verbose)
                         ))
@@ -151,9 +160,8 @@ impl Parser {
         // converts tokens into the keycode struct and collects them in a vector
         let mut keycode_buf: Vec<KeyCode> = Vec::new();
         for token in payload_tokens {
-            keycode_buf.push(token.to_string()
-                .as_str()
-                .to_keycode(&self.kb_layout)?
+            keycode_buf.push(token
+                .to_keycode::<&str>(&self.kb_layout)?
             );
         }
 
@@ -178,9 +186,9 @@ impl Parser {
         
         let mut keycode_buf: Vec<KeyCode> = Vec::new();
         for token in payload_tokens.join(" ").chars() {
-            keycode_buf.push(token.to_string()
-                .as_str()
-                .to_keycode(&self.kb_layout)?
+            keycode_buf.push(token
+                .to_string()
+                .to_keycode::<String>(&self.kb_layout)?
             );
         }
 

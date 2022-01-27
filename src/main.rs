@@ -31,18 +31,18 @@ fn main() -> Result<(), DuckyError> {
     else if output_size > 1_000_000_000 { display_size = format!("{:.2}G", output_size/1_000_000_000)}
 
     if output_size > 50_000 { 
-        print!("\n{} Output file size.\n", "[WARNING]".yellow().bold());
-        print!("| Due to the limited amount of FLASH storage on Non-Express microcontrollers,\n");
+        print!("{} Output file size.\n", "[WARNING]".yellow().bold());
+        print!("| Due to the limited amount of {} storage on {} microcontrollers,\n", "FLASH".yellow().bold(), "Non-Express".yellow().bold());
         print!("| Files exceeding {} in size might not fit.\n", "50K".yellow().bold());
         print!("| Check out Circuit Python's expectations page for more details.\n");
-        print!("| {}", "https://learn.adafruit.com/circuitpython-essentials/circuitpython-expectations\n".green());
+        print!("| {}", "https://learn.adafruit.com/circuitpython-essentials/circuitpython-expectations\n\n".green());
     }
     
-    print!("{} {}\n", "[SUCCESS]".green().bold(), "Tranpiled with no errors.".white());
-    print!("| Input: '{}'\n", &ARGS.payload_file.blue());
-    print!("| Output: '{}'\n", &ARGS.output_file.blue());
-    print!("| Output size: '{}'\n", display_size.blue());
-    print!("| Layout: '{}'\n", &ARGS.keyboard_language.blue());
+    print!("{} {}\n", "[SUCCESS]".green().bold(), "Transpiled with no errors.".white());
+    print!("| Input: '{}'\n", &ARGS.payload_file.blue().bold());
+    print!("| Output: '{}'\n", &ARGS.output_file.blue().bold());
+    print!("| Output size: '{}'\n", display_size.blue().bold());
+    print!("| Layout: '{}'\n", &ARGS.keyboard_language.blue().bold());
     print!("| Time elapsed: {:.2?}\n", elapsed);
 
     Ok(())

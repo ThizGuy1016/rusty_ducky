@@ -6,13 +6,14 @@ use super::{ARGS, RELEASE, KeyReport, ducky_io::*};
 const TEMPLATE: &str = "import usb_hid, time
 def report(report_code, rel = True, slep = 0.02) -> None:
     kbd.send_report(bytearray(report_code), 1)
-    time.sleep(slp)
+    time.sleep(slep)
     if rel:
         kbd.send_report(bytearray([0]*8))
         time.sleep(0.02)
 slp = 0
 kbd = [device for device in usb_hid.devices if device.usage_page == 0x1 and device.usage == 0x6 and hasattr(device, 'send_report')][0]
-time.sleep(1)";
+time.sleep(1)
+";
     
 
 pub fn transpile(payload_tokens: Vec<KeyReport>) -> Result<(), DuckyError> {
