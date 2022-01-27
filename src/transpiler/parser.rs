@@ -1,12 +1,12 @@
 // parses the provided duckyscript payload into tokens that can be used for compilation, transpilation, or even execution
-use serde_json::{Value};
+
+use serde_json::Value;
 use std::fs::File;
-use std::io::BufReader;
-use std::io::prelude::*;
+use std::io::{BufReader, prelude::*};
 
 use crate::DuckyError;
 
-use super::{Args, KeyValue, KeyReport, RELEASE};
+use super::{ARGS, KeyValue, KeyReport, RELEASE, ducky_read_file};
 
 #[derive(Debug)]
 struct KeyCode {
@@ -49,45 +49,22 @@ impl <'a>ToKeyCode for &'a str {
             mod_code: modcode
         })
     }
-
-}
-
-// loads the [kb_language].json file from the provided directory
-fn load_layout(kb_lang: &str, v: &bool) -> Result<Value, DuckyError> {
-    let file_location: String = format!("{}", &kb_lang);
-    // added the match statement for more verbose errors
-    let layout_file = match File::open(&file_location) {
-        Ok(f) => Ok(f),
-        Err(e) => {
-            let verbose_error = format!("{}", e);
-            Err(DuckyError::new("Failed to open provided Keyboard Layout file.", Some(format!("Attempted to open: {}", &file_location).as_str()), (verbose_error.as_str(), *v)))
-        }
-    }?;
-    let mut bufreader = BufReader::new(layout_file);
-    let mut layout_contents: String = String::new();
-    bufreader.read_to_string(&mut layout_contents)?;
-
-    Ok(serde_json::from_str(&layout_contents)?)
 }
 
 pub struct Parser {
-    kb_layout: Value,
-    args: Args
+    kb_layout: Value
 }
 
 impl Parser {
-    pub fn new(args: &Args) -> Result<Self, DuckyError> {
-        
-        let new_args: Args = args.clone();
 
-        Ok(Parser {
-            kb_layout: load_layout(&args.keyboard_language, &args.verbose)?,
-            args: new_args
-        })
+    // loads the [kb_language].json file from the provided directory
+    pub fn new() -> Result<Parser, DuckyError> {
+        let layout_contents = ducky_read_file(&ARGS.keyboard_language)?;
+        Ok( Self { kb_layout: serde_json::from_str(&layout_contents)? } )
     }
 
     pub fn parse_payload(&self) -> Result<Vec<KeyReport>, DuckyError> {
-        let payload_file: String = format!("{}", &self.args.payload_file);
+        let payload_file: String = format!("{}", &ARGS.payload_file);
         let file = File::open(&payload_file)?;
         let reader = BufReader::new(file);
 
@@ -110,7 +87,7 @@ impl Parser {
                         Err(_e) => Err(DuckyError::new(
                             "Unable to convert Payload element into valid keycode.",
                             Some(err_data.as_str()),
-                            ("Make sure this command is present in your [keyboard_language].json file.", self.args.verbose)
+                            ("Make sure this command is present in your [keyboard_language].json file.", ARGS.verbose)
                         ))
                     }?; 
                     for r in report { report_buf.push(r); }
@@ -123,7 +100,7 @@ impl Parser {
                         Err(DuckyError::new(
                             "DELAY was called without a value, but DEFAULT_DELAY was not set.",
                             Some(err_data.as_str()),
-                            ("Make sure to call DEFAULT_DELAY before assigning empty delays.", self.args.verbose)
+                            ("Make sure to call DEFAULT_DELAY before assigning empty delays.", ARGS.verbose)
                         ))?
                     }
                     
@@ -133,10 +110,10 @@ impl Parser {
                         Err(_e) => Err(DuckyError::new(
                             "Failed to convert delay time into a number.",
                             Some(err_data.as_str()),
-                            ("Make sure the value for delay time is formatted as such: DELAY [delay_time]", self.args.verbose)
+                            ("Make sure the value for delay time is formatted as such: DELAY [delay_time]", ARGS.verbose)
                             ))
                         }?;
-                        report_buf.push([100, 0, delay_time, 0, 0, 0, 0, 0])
+                        report_buf.push([0, 100, delay_time, 0, 0, 0, 0, 0])
                     }
                 },
                 
@@ -146,11 +123,11 @@ impl Parser {
                         Err(_e) => Err(DuckyError::new(
                             "Failed to convert default delay time into a number.",
                             Some(err_data.as_str()),
-                            ("Make sure the value for delay time is formatted as such: DEFAULT_DELAY [delay_time]", self.args.verbose)
+                            ("Make sure the value for delay time is formatted as such: DEFAULT_DELAY [delay_time]", ARGS.verbose)
                         ))
                     }?;
                     d_delay = true;
-                    report_buf.push([200, 0, delay_time, 0, 0, 0, 0, 0])
+                    report_buf.push([0, 200, delay_time, 0, 0, 0, 0, 0])
                 },
                 
                 _ => { 
@@ -159,7 +136,7 @@ impl Parser {
                         Err(_e) => Err(DuckyError::new(
                             "Unable to convert Payload element into valid keycode.",
                             Some(err_data.as_str()),
-                            ("Make sure this command is present in your [keyboard_language].json file.", self.args.verbose)
+                            ("Make sure this command is present in your [keyboard_language].json file.", ARGS.verbose)
                         ))
                     }?; 
                     for r in report { report_buf.push(r); }

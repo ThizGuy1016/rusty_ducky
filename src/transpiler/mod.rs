@@ -1,11 +1,10 @@
-// main should be able to compile or transpile
-pub mod rusty_ducky_compiler;
-pub mod micro_ducky_transpiler;
+pub mod circuit_transpiler;
 pub mod parser;
+pub mod ducky_io;
 
 pub use parser::Parser;
-pub use micro_ducky_transpiler::transpile;
-//pub use rusty_ducky_compiler::compile;
+pub use circuit_transpiler::transpile;
+pub use ducky_io::*;
 
 pub type KeyValue = u16;
 pub type KeyReport = [KeyValue; 8];
@@ -15,6 +14,9 @@ extern crate clap;
 
 use clap::{App, Arg};
 use std::ffi::OsString;
+use once_cell::sync::Lazy;
+
+pub static ARGS: Lazy<Args> = Lazy::new(||{Args::new()});
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Args {
@@ -22,9 +24,7 @@ pub struct Args {
     template_file: Option<String>,
     pub output_file: String,
     pub keyboard_language: String,
-    pub compile: bool,
-    pub transpile: bool,
-    verbose: bool
+    pub verbose: bool
 }
 
 impl Args {
@@ -38,9 +38,9 @@ impl Args {
         T: Into<OsString> + Clone,    
     {
         let app = App::new("rusty_ducky")
-            .version("0.4.3")
+            .version("0.5")
             .about("rusty_ducky is a DuckyScript keystroke injection toolkit for microcontrollers that support Circuit Python.")
-            .author("Carter Vavra");
+            .author("ITDude");
 
         let payload_file_option = Arg::new("payload")
             .long("payload")
@@ -53,7 +53,7 @@ impl Args {
 
         let template_file_option = Arg::new("template")
         .long("template")
-        .short('i')
+        .short('t')
         .takes_value(true)
         .help("Overrides rusty ducky's template circuit python file to a file of your choosing.")
         .required(false);
@@ -73,25 +73,9 @@ impl Args {
         .short('l')
         .takes_value(true)
         .help("Points rusty ducky to a [keyboard_language].json file to parse.")
-        .default_value("US")
+        .default_value("US.json")
         .required(false);
         let app = app.arg(keyboard_language_option);
-
-        // let compile_option = Arg::new("compile")
-        // .long("compile")
-        // .short('c')
-        // .takes_value(false)
-        // .help("Tells rusty ducky to compile the payload file. [NOT IMPLEMENTED YET!]")
-        // .required(false);
-        // let app = app.arg(compile_option);
-
-        // let transpile_option = Arg::new("transpile")
-        // .long("transpile")
-        // .short('t')
-        // .takes_value(false)
-        // .help("Tells rusty ducky to transpile the payload file to cuircut python.")
-        // .required(false);
-        // let app = app.arg(transpile_option);
 
         let verbose_option = Arg::new("verbose")
         .long("verbose")
@@ -113,8 +97,6 @@ impl Args {
             .value_of("language")
             .unwrap();
         let verbose = matches.is_present("verbose");
-        //let compiled = matches.is_present("compile");
-        //let transpiled = matches.is_present("transpile");
 
         let mut template: Option<String> = None;
         if matches.is_present("template") { template = Some(matches.value_of("template").unwrap().to_string())}
@@ -124,9 +106,6 @@ impl Args {
             output_file: output_file.to_string(),
             template_file: template,
             keyboard_language: keyboard_language.to_string(),
-            // change when compile is implemented
-            compile: false,
-            transpile: true,
             verbose: verbose
         } )
     }
