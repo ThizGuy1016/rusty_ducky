@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # rusty_ducky
 > "DuckyScript simplified"
 
