@@ -75,4 +75,3 @@ OPTIONS:
     -v, --verbose                Sets the verbosity level of rusty ducky errors.
     
     -V, --version                Print version information
->>>>>>> 7f955ee0c65e76c99af9cd7efc3e127433e5cdbc
